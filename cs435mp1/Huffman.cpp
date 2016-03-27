@@ -29,8 +29,9 @@ void Huffman::encode(char* f, ofstream& o) {
 	buildCode(code, root, "");
 	writeTree(root);
 	string outStr = generateEncodedString();
-	//string convertedString = convert(outStr);
-	string convertedStr = outStr;
+	string convertedStr = convert(outStr);
+	cout << "pre: " << outStr.length() << endl;
+	cout << "post: " << convertedStr.length() << endl;
 	string fName(f);
 	fName += ".huf";
 	writeToFile(fName, o, convertedStr);
@@ -118,7 +119,7 @@ void Huffman::buildCode(string st[], Node* x, string s) {
 	}
 }
 
-string convert(string bits) {
+string Huffman::convert(string bits) {
 	string out(bits.size() / 8, 0);
 	for (int i = 0; i < bits.size(); i++) {
 		if (bits[i] == '1') {
@@ -133,7 +134,7 @@ string Huffman::generateEncodedString() {
 	double count = 0;
 	output = "";
 
-	cout << "Original Count: " << (double)(bytes.size() * 8) << endl;
+	cout << "Original Count: " << (double)bytes.size() << endl;
 
 	for (int i = 0; i < bytes.size(); i++) {
 		if (bytes[i] > 0) {
@@ -143,9 +144,9 @@ string Huffman::generateEncodedString() {
 		}
 	}
 
-	double savings = ((count / (double)(bytes.size() * 8)) * 100);
+	double savings = ( (count/8) / (double)bytes.size() * 100);
 
-	cout << "Compressed Count: " <<  count << endl;
+	cout << "Compressed Count: " <<  (int)count/8 << endl;
 	cout << "Savings: " << savings << " %" << endl;
 
 	return output;
