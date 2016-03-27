@@ -15,6 +15,9 @@ public:
 	void printVector();
 	void getFreq();
 	Node* buildMinHeap();
+	string convert(string&);
+	void writeTree(Node*);
+	void Huffman::buildCode(string[], Node*, string);
 	vector<char> bytes;
 	
 //private:

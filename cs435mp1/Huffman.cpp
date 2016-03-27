@@ -8,7 +8,7 @@
 
 const int NUM_CHAR = 256;
 int charCount[NUM_CHAR];
-//char *code[NUM_CHAR];
+string code[NUM_CHAR] = {};
 Node *root;
 //int[] freq;
 //int[] charLocs;
@@ -24,7 +24,14 @@ void Huffman::encode(char* f) {
 	getFreq();
 	printVector();
 	root = buildMinHeap();
-
+	
+	buildCode(code, root, "");
+	writeTree(root);
+	string s = "10001010101101011";
+	string str = convert(str);
+	for (int i = 0; i < str.length(); i++) {
+		cout << str[i] << endl;
+	}
 }
 
 
@@ -86,4 +93,34 @@ Node* Huffman::buildMinHeap() {
 		pq->add(parent);
 	}
 	return pq->remove();
+}
+
+void Huffman::writeTree(Node* x) {
+	if (x->isLeaf()) {
+		//System.out.println(x.data);
+		return;
+	}
+	writeTree(x->left);
+	writeTree(x->right);
+}
+
+void Huffman::buildCode(string st[], Node* x, string s) {
+	if (!x->isLeaf()) {
+		buildCode(st, x->left, s.append("0"));
+		buildCode(st, x->right, s.append("1"));
+	}
+	else {
+		st[x->data] = s;
+
+	}
+}
+
+string convert(string& bits) {
+	string output(bits.size() / 8, 0);
+	for (int i = 0; i < bits.size(); i++) {
+		if (bits[i] == '1') {
+			output[i / 8] |= 1 << (7 - (i % 8));
+		}
+	}
+	return output;
 }
