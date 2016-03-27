@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Huffman.h"
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -14,11 +15,17 @@ int main(int argc, char* argv[])
 	char *action = argv[1];
 	char *fn = argv[2];
 
+	string fStr(fn);
+	fStr += ".huf";
+
+	ofstream oFile(fStr, ios::binary);
+	ifstream iFile;
+
 	Huffman h;
 
-	cout << fn << endl;
+	h.encode(fn, oFile);
 
-	h.encode(fn);
+	oFile.close();
 
 	return 0;
 }

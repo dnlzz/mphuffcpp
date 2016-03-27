@@ -10,12 +10,10 @@ heapPQueue::heapPQueue() {
 }
 
 void heapPQueue::add(Node* value) {
-
 	
 	int idx = numEls;
 	arr.push_back(value);
 	numEls++;
-	cout << arr[idx]->freq << endl;
 
 	bubbleUp();
 }
@@ -54,14 +52,7 @@ Node* heapPQueue::remove() {
 }
 
 
-char* heapPQueue::toString() {
-	//printVector()
-	return "toString";
-}
-
-
 void heapPQueue::bubbleDown() {
-	cout << "DOWN!" << endl;
 	int idx = 0;
 
 	while (hasLeftChild(idx)) {
@@ -86,14 +77,14 @@ void heapPQueue::bubbleDown() {
 void heapPQueue::bubbleUp() {
 	int idx = numEls-1;
 
-	cout << endl;
+	/*cout << endl;
 	cout << "idx: " << idx << endl;
 	cout << "hasparent: " << hasParent(idx) << endl;
 	cout << "parent: " << parent(idx)->data << ", " << parent(idx)->freq << endl;
 	cout << "vec[idx]: " << arr[idx]->freq << endl;
 	cout << "compareto: " << parent(idx)->compareTo(arr[idx]) << endl;
 	cout << "T/F" << hasParent(idx) && (parent(idx)->compareTo(arr[idx]) > 0);
-	cout << endl;
+	cout << endl;*/
 
 	while ( hasParent(idx) && ( parent(idx)->compareTo(arr[idx]) > 0) ) {
 		swap(idx, parentIndex(idx));

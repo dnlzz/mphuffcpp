@@ -2,7 +2,9 @@
 #define HUFFMAN_H
 
 #include "Node.h"
+#include <fstream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -10,15 +12,18 @@ class Huffman
 {
 public:
 	Huffman();
-	void encode(char*);
+	void encode(char*, ofstream&);
 	vector<char> readAllBytes(char const*);
 	void printVector();
 	void getFreq();
 	Node* buildMinHeap();
-	string convert(string&);
+	string convert(string);
 	void writeTree(Node*);
 	void Huffman::buildCode(string[], Node*, string);
+	string generateEncodedString();
+	void writeToFile(string, ofstream&, string);
 	vector<char> bytes;
+	string output;
 	
 //private:
 	//String encodeFile();

@@ -10,6 +10,7 @@ const int NUM_CHAR = 256;
 int charCount[NUM_CHAR];
 string code[NUM_CHAR] = {};
 Node *root;
+
 //int[] freq;
 //int[] charLocs;
 
@@ -19,7 +20,7 @@ Huffman::Huffman()
 	cout << "Huff" << endl;
 }
 
-void Huffman::encode(char* f) {
+void Huffman::encode(char* f, ofstream& o) {
 	bytes = readAllBytes(f);
 	getFreq();
 	printVector();
@@ -27,11 +28,13 @@ void Huffman::encode(char* f) {
 	
 	buildCode(code, root, "");
 	writeTree(root);
-	string s = "10001010101101011";
-	string str = convert(str);
-	for (int i = 0; i < str.length(); i++) {
-		cout << str[i] << endl;
-	}
+	string outStr = generateEncodedString();
+	//string convertedString = convert(outStr);
+	string convertedStr = outStr;
+	string fName(f);
+	fName += ".huf";
+	writeToFile(fName, o, convertedStr);
+
 }
 
 
@@ -44,7 +47,7 @@ vector<char> Huffman::readAllBytes(char const* fn)
 
 	ifs.seekg(0, ios::beg);
 	ifs.read(&result[0], pos);
-
+	cout << "post read:" << endl;
 	return result;
 }
 
@@ -115,12 +118,48 @@ void Huffman::buildCode(string st[], Node* x, string s) {
 	}
 }
 
-string convert(string& bits) {
-	string output(bits.size() / 8, 0);
+string convert(string bits) {
+	string out(bits.size() / 8, 0);
 	for (int i = 0; i < bits.size(); i++) {
 		if (bits[i] == '1') {
-			output[i / 8] |= 1 << (7 - (i % 8));
+			out[i / 8] |= 1 << (7 - (i % 8));
 		}
 	}
+	return out;
+}
+
+string Huffman::generateEncodedString() {
+
+	double count = 0;
+	output = "";
+
+	cout << "Original Count: " << (double)(bytes.size() * 8) << endl;
+
+	for (int i = 0; i < bytes.size(); i++) {
+		if (bytes[i] > 0) {
+			string outCode = code[bytes[i]];
+			output += outCode;
+			count += outCode.length();
+		}
+	}
+
+	double savings = ((count / (double)(bytes.size() * 8)) * 100);
+
+	cout << "Compressed Count: " <<  count << endl;
+	cout << "Savings: " << savings << " %" << endl;
+
 	return output;
+
+}
+
+void Huffman::writeToFile(string f, ofstream& o, string s) {
+
+	cout << "Writing to: " << f << endl;
+
+	for (int i = 0; i < s.length(); i++)
+	{
+		o << s[i];
+	}
+
+	cout << "Sucessfully written!" << endl;
 }
