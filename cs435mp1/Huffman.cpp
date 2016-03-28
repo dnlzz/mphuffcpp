@@ -17,25 +17,25 @@ Node *root;
 
 Huffman::Huffman()
 {
-	cout << "Huff" << endl;
+	cout << "Let's work on getting that file compressed!" << endl;
 }
 
 void Huffman::encode(char* f, ofstream& o) {
 	bytes = readAllBytes(f);
 	getFreq();
-	printVector();
+	//printVector();
 	root = buildMinHeap();
-	
 	buildCode(code, root, "");
 	writeTree(root);
 	string outStr = generateEncodedString();
 	string convertedStr = convert(outStr);
-	cout << "pre: " << outStr.length() << endl;
-	cout << "post: " << convertedStr.length() << endl;
+	string headerStr = generateHeader();
+	string convertedHeaderStr = convert(headerStr);
+
+
 	string fName(f);
 	fName += ".huf";
-	writeToFile(fName, o, convertedStr);
-
+	writeToFile(fName, o, convertedHeaderStr, convertedStr);
 }
 
 
@@ -48,7 +48,7 @@ vector<char> Huffman::readAllBytes(char const* fn)
 
 	ifs.seekg(0, ios::beg);
 	ifs.read(&result[0], pos);
-	cout << "post read:" << endl;
+
 	return result;
 }
 
@@ -153,9 +153,27 @@ string Huffman::generateEncodedString() {
 
 }
 
-void Huffman::writeToFile(string f, ofstream& o, string s) {
+string Huffman::generateHeader() {
+	string out = "";
+
+	for (int i = 0; i < NUM_CHAR; i++)
+	{
+		out = out + to_string(charCount[i]) + " ";
+	}
+
+	return out;
+}
+
+void Huffman::writeToFile(string f, ofstream& o, string h, string s) {
 
 	cout << "Writing to: " << f << endl;
+
+	for (int j = 0; j < h.length(); j++)
+	{
+		o << h[j];
+	}
+
+	o << endl;
 
 	for (int i = 0; i < s.length(); i++)
 	{
@@ -163,4 +181,17 @@ void Huffman::writeToFile(string f, ofstream& o, string s) {
 	}
 
 	cout << "Sucessfully written!" << endl;
+}
+
+void Huffman::decode(char* f, ifstream& ifs) {
+	readFile(f, ifs);
+	printVector();
+	root = buildMinHeap();
+	buildCode(code, root, "");
+	writeTree(root);
+
+}
+
+void Huffman::readFile(char* f, ifstream &ifs) {
+
 }

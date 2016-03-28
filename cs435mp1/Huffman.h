@@ -21,7 +21,11 @@ public:
 	void writeTree(Node*);
 	void Huffman::buildCode(string[], Node*, string);
 	string generateEncodedString();
-	void writeToFile(string, ofstream&, string);
+	string generateHeader();
+	void writeToFile(string, ofstream&, string, string);
+
+	void decode(char*, ifstream&);
+	void readFile(char*, ifstream&);
 	vector<char> bytes;
 	string output;
 	

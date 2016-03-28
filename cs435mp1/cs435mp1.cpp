@@ -17,15 +17,18 @@ int main(int argc, char* argv[])
 
 	string fStr(fn);
 	fStr += ".huf";
+	string fn(fn);
 
 	ofstream oFile(fStr, ios::binary);
-	ifstream iFile;
+	ifstream iFile(fn, ios::binary);
 
 	Huffman h;
 
-	h.encode(fn, oFile);
+	//h.encode(fn, oFile);
+	h.decode(fn, iFile);
 
 	oFile.close();
+	iFile.close();
 
 	return 0;
 }
