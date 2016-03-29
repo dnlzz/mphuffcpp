@@ -19,12 +19,6 @@
     <Text Include="..\..\..\..\mptest.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -34,11 +28,11 @@
     <ClInclude Include="Huffman.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bitIO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cs435mp1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,6 +43,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Huffman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bitIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

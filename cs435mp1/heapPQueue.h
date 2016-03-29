@@ -2,6 +2,8 @@
 #ifndef HEAPPQUEUE_H
 #define HEAPPQUEUE_H
 
+#include "Node.h"
+#include <iostream>
 #include <vector>
 #include "Node.h"
 

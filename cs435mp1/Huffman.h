@@ -3,8 +3,14 @@
 
 #include "Node.h"
 #include <fstream>
-#include <vector>
 #include <string>
+#include "heapPQueue.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <istream>
+#include "bitIO.h"
 
 using namespace std;
 
@@ -12,20 +18,21 @@ class Huffman
 {
 public:
 	Huffman();
-	void encode(char*, ofstream&);
+	void encode(char*);
 	vector<char> readAllBytes(char const*);
 	void printVector();
 	void getFreq();
 	Node* buildMinHeap();
 	string convert(string);
 	void writeTree(Node*);
-	void Huffman::buildCode(string[], Node*, string);
+	void buildCode(string[], Node*, string);
 	string generateEncodedString();
+	vector<int> strToVec(string);
 	string generateHeader();
-	void writeToFile(string, ofstream&, string, string);
+	void writeToFile(string, obstream&, string);
 
-	void decode(char*, ifstream&);
-	void readFile(char*, ifstream&);
+	void decode(char*);
+	vector<int> readFile(char*);
 	vector<char> bytes;
 	string output;
 	

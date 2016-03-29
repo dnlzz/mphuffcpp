@@ -1,14 +1,11 @@
-#include "huffman.h"
-#include "heapPQueue.h"
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <istream>
+#include "Huffman.h"
+
 
 
 const int NUM_CHAR = 256;
 int charCount[NUM_CHAR];
 string code[NUM_CHAR] = {};
+vector<int> codes;
 Node *root;
 
 //int[] freq;
@@ -20,22 +17,29 @@ Huffman::Huffman()
 	cout << "Let's work on getting that file compressed!" << endl;
 }
 
-void Huffman::encode(char* f, ofstream& o) {
+void Huffman::encode(char* f) {
 	bytes = readAllBytes(f);
 	getFreq();
-	//printVector();
+	printVector();
 	root = buildMinHeap();
 	buildCode(code, root, "");
 	writeTree(root);
 	string outStr = generateEncodedString();
-	string convertedStr = convert(outStr);
+	cout << "outStr: " << outStr << endl;
+	codes = strToVec(outStr);
+	//string convertedStr = convert(outStr);
 	string headerStr = generateHeader();
-	string convertedHeaderStr = convert(headerStr);
-
+	//string convertedHeaderStr = convert(headerStr);
 
 	string fName(f);
 	fName += ".huf";
-	writeToFile(fName, o, convertedHeaderStr, convertedStr);
+	
+	cout << "Writingn to: " << fName << endl;
+
+	ofstream oFile(fName, ios::binary);
+	obstream o(oFile);
+	o.writeBits(codes);
+	oFile.close();
 }
 
 
@@ -65,10 +69,9 @@ void Huffman::printVector() {
 }
 
 void Huffman::getFreq() {
-	for (int i = 0; i < NUM_CHAR; ++i)
+	for (int i = 0; i < NUM_CHAR; ++i) {
 		charCount[i] = 0;
-
-	cout << bytes[0] << endl;
+	}
 
 	int k = 0;
 	for (int j = 0; j < bytes.size(); j++) {
@@ -84,9 +87,10 @@ Node* Huffman::buildMinHeap() {
 
 	heapPQueue *pq = new heapPQueue();
 
-	for (int i = 0; i < NUM_CHAR; i++)
+	for (int i = 0; i < NUM_CHAR; i++) {
 		if (charCount[i] > 0) {
 			pq->add(new Node(i, charCount[i], NULL, NULL));
+		}
 	}
 
 	// merge two smallest trees
@@ -110,12 +114,11 @@ void Huffman::writeTree(Node* x) {
 
 void Huffman::buildCode(string st[], Node* x, string s) {
 	if (!x->isLeaf()) {
-		buildCode(st, x->left, s.append("0"));
-		buildCode(st, x->right, s.append("1"));
+		buildCode(st, x->left, s.append("0 "));
+		buildCode(st, x->right, s.append("1 "));
 	}
 	else {
 		st[x->data] = s;
-
 	}
 }
 
@@ -126,6 +129,9 @@ string Huffman::convert(string bits) {
 			out[i / 8] |= 1 << (7 - (i % 8));
 		}
 	}
+
+	cout << "out: " << out << endl;
+
 	return out;
 }
 
@@ -153,21 +159,35 @@ string Huffman::generateEncodedString() {
 
 }
 
+vector<int> Huffman::strToVec(string s)
+{
+	vector<int> inputs;
+	istringstream in(s);
+	copy(std::istream_iterator<int>(in), std::istream_iterator<int>(),
+		std::back_inserter(inputs));
+	return inputs;
+}
+
 string Huffman::generateHeader() {
 	string out = "";
 
 	for (int i = 0; i < NUM_CHAR; i++)
 	{
-		out = out + to_string(charCount[i]) + " ";
+		//out = out + to_string(charCount[i]) + " ";
 	}
 
 	return out;
 }
 
-void Huffman::writeToFile(string f, ofstream& o, string h, string s) {
+void Huffman::writeToFile(string f, obstream &o, string h) {
 
+	//ofstream o(f.c_str(), ios::binary);
+	
 	cout << "Writing to: " << f << endl;
 
+	//o.writeBits(codes);
+
+	/*
 	for (int j = 0; j < h.length(); j++)
 	{
 		o << h[j];
@@ -179,19 +199,59 @@ void Huffman::writeToFile(string f, ofstream& o, string h, string s) {
 	{
 		o << s[i];
 	}
-
+	*/
 	cout << "Sucessfully written!" << endl;
 }
 
-void Huffman::decode(char* f, ifstream& ifs) {
-	readFile(f, ifs);
-	printVector();
-	root = buildMinHeap();
-	buildCode(code, root, "");
-	writeTree(root);
+void Huffman::decode(char* f) {
+	cout << f << endl;
+	vector<int>ints = readFile(f);
+
+	for (int i = 0; i < bytes.size(); i++)
+	{
+		cout << bytes[i] << endl;
+	}
+
+	//printVector();
+	//root = buildMinHeap();
+	//buildCode(code, root, "");
+	//writeTree(root);
 
 }
 
-void Huffman::readFile(char* f, ifstream &ifs) {
+vector<int> Huffman::readFile(char* f) {
+	/*
+	ifstream ifs(f, ios::binary | ios::ate);
+	ifstream::pos_type pos = ifs.tellg();
+
+	vector<char>  result(pos);
+
+	ifs.seekg(0, ios::beg);
+	ifs.read(&result[0], pos);
+
+	return result;
+	*/
+
+	string fName(f);
+	fName += ".huf";
+
+	ifstream iFile(fName, ios::binary);
+	ibstream i(iFile);
+	vector<int> ints;
+	while (iFile)
+	{
+		ints.push_back(i.readBit());
+	}
+
+	cout << ints.size() << endl;
+
+	for (int i = 0; i < ints.size(); i++)
+	{
+		cout << ints[i] << " ";
+	}
+
+	iFile.close();
+
+	return ints;
 
 }

@@ -1,8 +1,5 @@
 
 #include "heapPQueue.h"
-#include <iostream>
-#include <array>
-#include "Node.h"
 
 heapPQueue::heapPQueue() {
 	arr;

@@ -15,20 +15,18 @@ int main(int argc, char* argv[])
 	char *action = argv[1];
 	char *fn = argv[2];
 
-	string fStr(fn);
-	fStr += ".huf";
-	string fn(fn);
+	string fname(fn);
 
-	ofstream oFile(fStr, ios::binary);
-	ifstream iFile(fn, ios::binary);
+	//ofstream oFile(fn, ios::binary);
+	//ifstream iFile(fname, ios::binary);
 
 	Huffman h;
 
-	//h.encode(fn, oFile);
-	h.decode(fn, iFile);
+	h.encode(fn);
+	//h.decode(fn);
 
-	oFile.close();
-	iFile.close();
+	//oFile.close();
+	//iFile.close();
 
 	return 0;
 }
