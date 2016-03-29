@@ -30,6 +30,7 @@ public:
 	vector<int> strToVec(string);
 	string generateHeader();
 	void writeToFile(string, obstream&, string);
+	void preOrder(Node*, vector<int>&);
 
 	void decode(char*);
 	vector<int> readFile(char*);

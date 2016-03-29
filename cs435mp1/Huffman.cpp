@@ -6,6 +6,7 @@ const int NUM_CHAR = 256;
 int charCount[NUM_CHAR];
 string code[NUM_CHAR] = {};
 vector<int> codes;
+vector<int> treeHeader;
 Node *root;
 
 //int[] freq;
@@ -20,12 +21,12 @@ Huffman::Huffman()
 void Huffman::encode(char* f) {
 	bytes = readAllBytes(f);
 	getFreq();
-	printVector();
+	//printVector();
 	root = buildMinHeap();
 	buildCode(code, root, "");
 	writeTree(root);
 	string outStr = generateEncodedString();
-	cout << "outStr: " << outStr << endl;
+	//cout << "outStr: " << outStr << endl;
 	codes = strToVec(outStr);
 	//string convertedStr = convert(outStr);
 	string headerStr = generateHeader();
@@ -38,8 +39,10 @@ void Huffman::encode(char* f) {
 
 	ofstream oFile(fName, ios::binary);
 	obstream o(oFile);
+
 	o.writeBits(codes);
 	oFile.close();
+
 }
 
 
@@ -57,9 +60,14 @@ vector<char> Huffman::readAllBytes(char const* fn)
 }
 
 void Huffman::printVector() {
+	
+	cout << "bytes" << endl;
+	
 	for (int i = 0; i < bytes.size(); i++) {
-		cout << bytes[i] << endl;
+		cout << bytes[i] << " ";
 	}
+
+	cout << "counts" << endl;
 
 	for (int i = 0; i < NUM_CHAR; i++) {
 		if (charCount[i] > 0)
@@ -170,13 +178,28 @@ vector<int> Huffman::strToVec(string s)
 
 string Huffman::generateHeader() {
 	string out = "";
+	Node* tmp = root;
 
-	for (int i = 0; i < NUM_CHAR; i++)
-	{
-		//out = out + to_string(charCount[i]) + " ";
-	}
+	preOrder(tmp, treeHeader);
+
+	cout << "\n\n\nPoreorder ree size?" << treeHeader.size() << endl;
 
 	return out;
+}
+
+void Huffman::preOrder(Node* r, vector<int> &v) {
+	
+	if (r == NULL) {
+		v.push_back(0);
+		cout << "-0-" << " \n";
+	}
+
+	else {
+		v.push_back(1);
+		cout << "-1:" << r->data << "-" << endl;
+		preOrder(r->left, v);
+		preOrder(r->right, v);
+	}
 }
 
 void Huffman::writeToFile(string f, obstream &o, string h) {
@@ -207,10 +230,7 @@ void Huffman::decode(char* f) {
 	cout << f << endl;
 	vector<int>ints = readFile(f);
 
-	for (int i = 0; i < bytes.size(); i++)
-	{
-		cout << bytes[i] << endl;
-	}
+
 
 	//printVector();
 	//root = buildMinHeap();

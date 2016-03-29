@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 
 	string fname(fn);
 
+
 	//ofstream oFile(fn, ios::binary);
 	//ifstream iFile(fname, ios::binary);
 
