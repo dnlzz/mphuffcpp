@@ -29,7 +29,7 @@ public:
 	string generateEncodedString();
 	vector<int> strToVec(string);
 	string generateHeader(obstream&);
-	void writeHeader(Node*, obstream&);
+	void writeHeader(obstream&, Node*, string);
 	void writeToFile(string, obstream&, string);
 	void preOrder(Node*);
 

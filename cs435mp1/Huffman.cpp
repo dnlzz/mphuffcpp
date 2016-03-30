@@ -7,6 +7,7 @@ int charCount[NUM_CHAR];
 string code[NUM_CHAR];
 vector<int> codes;
 vector<int> treeHeader;
+string header;
 Node *root;
 int fSize;
 char * buffer;
@@ -229,25 +230,36 @@ string Huffman::generateHeader(obstream& o) {
 
 	//preOrder(tmp);
 
-	writeHeader(tmp, o);
+	header = "";
+	writeHeader(o, tmp, "");
+	cout << "header: " << header << endl;
 
 	cout << "\n\n\nPoreorder ree size? " << treeHeader.size() << endl;
 
 	return out;
 }
 
-void Huffman::writeHeader(Node* r, obstream& out) {
-	if (!r) {
-		treeHeader.push_back(-1); // "# "
+void Huffman::writeHeader(obstream& out, Node* r, string s) {
+	if (!r->isLeaf()) {
+		writeHeader(out, r->left, s + "0 ");
+		writeHeader(out, r->right, s + "1 ");
 	}
 	else {
-		treeHeader.push_back(r->data); // << r->data << " ";
-		writeHeader(r->left, out);
-		writeHeader(r->right, out);
+		s += r->data;
+		s = s + " ";
+		header += s;
 	}
 
-	treeHeader.push_back(-2);
-	out.writeBits(treeHeader);
+	//out.writeBits(treeHeader);
+
+	ofstream of("test.txt", false);
+	for (int i = 0; i < header.length(); i++)
+	{
+		of.put(header[i]);
+	}
+	of.close();
+
+
 
 }
 
