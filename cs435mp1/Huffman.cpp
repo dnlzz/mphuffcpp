@@ -40,8 +40,19 @@ void Huffman::encode(char* f) {
 	obstream o(oFile);
 
 	string headerStr = generateHeader(o);
+	treeHeader = strToVec(header);
 
-	o.writeBits(codes);
+	treeHeader.insert(treeHeader.end(), codes.begin(), codes.end());
+
+	for (int j = 0; j < treeHeader.size(); j++)
+	{
+		cout << treeHeader[j];
+	}
+
+	cout << "\nWrite size " << treeHeader.size() << endl;
+
+	o.writeBits(treeHeader);
+	
 	oFile.close();
 
 	int numOut = 0;
@@ -70,10 +81,6 @@ vector<char> Huffman::readAllBytes(char const* fn)
 	ifs.read(&result[0], pos);
 
 	return result;
-
-	
-
-
 }
 
 void Huffman::printVector() {
@@ -232,6 +239,7 @@ string Huffman::generateHeader(obstream& o) {
 
 	header = "";
 	writeHeader(o, tmp, "");
+	header = header + "-1";
 	cout << "header: " << header << endl;
 
 	cout << "\n\n\nPoreorder ree size? " << treeHeader.size() << endl;
@@ -250,61 +258,12 @@ void Huffman::writeHeader(obstream& out, Node* r, string s) {
 		header += s;
 	}
 
-	//out.writeBits(treeHeader);
-
-	ofstream of("test.txt", false);
-	for (int i = 0; i < header.length(); i++)
-	{
-		of.put(header[i]);
-	}
-	of.close();
-
-
-
 }
 
-void Huffman::preOrder(Node* r) {
-	
-	if (r == NULL)
-		return;
-
-	if (r->data != '\0') {
-		//cout << r->data << " ";
-	}
-	
-
-	preOrder(r->left);
-	preOrder(r->right);
-	
-}
-
-void Huffman::writeToFile(string f, obstream &o, string h) {
-
-	//ofstream o(f.c_str(), ios::binary);
-	
-	cout << "Writing to: " << f << endl;
-
-	//o.writeBits(codes);
-
-	/*
-	for (int j = 0; j < h.length(); j++)
-	{
-		o << h[j];
-	}
-
-	o << endl;
-
-	for (int i = 0; i < s.length(); i++)
-	{
-		o << s[i];
-	}
-	*/
-	cout << "Sucessfully written!" << endl;
-}
 
 void Huffman::decode(char* f) {
 	cout << f << endl;
-	vector<int>ints = readFile(f);
+	vector<int> ints = readFile(f);
 
 
 
@@ -327,33 +286,16 @@ vector<int> Huffman::readFile(char* f) {
 
 	return result;
 	*/
-
-	string fName(f);
-	fName += ".huf";
-
-	ifstream iFile(fName, ios::binary);
-	ibstream i(iFile);
-	vector<int> ints;
-	vector<int> byts;
-	string bints = "";
-	while (iFile)
+	vector<int> bits;
+	ifstream ifs(f, ios::binary);
+	ibstream ib(ifs);
+	int counter = 0;
+	while (ib.readBit() != EOF)
 	{
-		ints.push_back(i.readBit());
+		bits.push_back(ib.readBit());
 	}
 
-	cout << ints.size() << endl;
-
-	for (int i = 0; i < ints.size(); i++)
-	{
-
-		if (i % 8 == 0)
-		{
-			cout << endl;
-		}
-	}
-
-	iFile.close();
-
-	return ints;
+	return bits;
 
 }
+
