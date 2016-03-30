@@ -19,7 +19,7 @@ class Huffman
 public:
 	Huffman();
 	void encode(char*);
-	vector<char> readAllBytes(char const*);
+	void readAllBytes(char const*);
 	void printVector();
 	void getFreq();
 	Node* buildMinHeap();
@@ -30,7 +30,7 @@ public:
 	vector<int> strToVec(string);
 	string generateHeader();
 	void writeToFile(string, obstream&, string);
-	void preOrder(Node*, vector<int>&);
+	void preOrder(Node*);
 
 	void decode(char*);
 	vector<int> readFile(char*);

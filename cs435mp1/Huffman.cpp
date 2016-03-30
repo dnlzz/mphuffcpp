@@ -4,10 +4,12 @@
 
 const int NUM_CHAR = 256;
 int charCount[NUM_CHAR];
-string code[NUM_CHAR] = {};
+string code[NUM_CHAR];
 vector<int> codes;
 vector<int> treeHeader;
 Node *root;
+int fSize;
+char * buffer;
 
 //int[] freq;
 //int[] charLocs;
@@ -19,9 +21,10 @@ Huffman::Huffman()
 }
 
 void Huffman::encode(char* f) {
-	bytes = readAllBytes(f);
-	getFreq();
-	//printVector();
+	readAllBytes(f);
+	
+	//getFreq();
+	printVector();
 	root = buildMinHeap();
 	buildCode(code, root, "");
 	writeTree(root);
@@ -43,11 +46,24 @@ void Huffman::encode(char* f) {
 	o.writeBits(codes);
 	oFile.close();
 
+	int numOut = 0;
+	for (int i = 0; i < NUM_CHAR; i++)
+	{
+		if (charCount[i] > 0) {
+			numOut += (code[i].size() / 2) * charCount[i];
+			cout << code[i] << " : " << i << " : " << code[i].size()/2 << endl;
+		}
+	}
+
+	cout << "total decompress size: " << numOut << endl;
+
 }
 
 
-vector<char> Huffman::readAllBytes(char const* fn)
+//vector<char> Huffman::readAllBytes(char const* fn)
+void Huffman::readAllBytes(char const* fn)
 {
+	/*
 	ifstream ifs(fn, ios::binary | ios::ate);
 	ifstream::pos_type pos = ifs.tellg();
 
@@ -57,6 +73,50 @@ vector<char> Huffman::readAllBytes(char const* fn)
 	ifs.read(&result[0], pos);
 
 	return result;
+	*/
+
+	FILE * pFile;
+	long lSize;
+	size_t result;
+
+	pFile = fopen(fn, "rb");
+	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
+
+	// obtain file size:
+	fseek(pFile, 0, SEEK_END);
+	lSize = ftell(pFile);
+	rewind(pFile);
+
+	// allocate memory to contain the whole file:
+	buffer = (char*)malloc(sizeof(char)*lSize);
+	if (buffer == NULL) { fputs("Memory error", stderr); exit(2); }
+
+	// copy the file into the buffer:
+	result = fread(buffer, sizeof(char), lSize, pFile);
+	if (result != lSize) { fputs("Reading error", stderr); exit(3); }
+
+	/* the whole file is now loaded in the memory buffer. */
+
+	rewind(pFile);
+	
+
+	int ch;
+	while ((ch = fgetc(pFile)) != EOF) {
+		++charCount[ch];
+		fSize++;
+	}
+
+	// terminate
+	fclose(pFile);
+
+	/*for (int i = 0; i < NUM_CHAR; i++)
+	{
+		cout << charCount[i] << "  ";
+	}*/
+
+	cout << "\nFsize" << fSize << endl;
+
+
 }
 
 void Huffman::printVector() {
@@ -100,7 +160,7 @@ Node* Huffman::buildMinHeap() {
 			pq->add(new Node(i, charCount[i], NULL, NULL));
 		}
 	}
-
+	
 	// merge two smallest trees
 	while (pq->size() > 1) {
 		Node *left = pq->remove();
@@ -113,7 +173,7 @@ Node* Huffman::buildMinHeap() {
 
 void Huffman::writeTree(Node* x) {
 	if (x->isLeaf()) {
-		//System.out.println(x.data);
+		cout << "Data: " << x->data << endl;
 		return;
 	}
 	writeTree(x->left);
@@ -121,9 +181,9 @@ void Huffman::writeTree(Node* x) {
 }
 
 void Huffman::buildCode(string st[], Node* x, string s) {
-	if (!x->isLeaf()) {
-		buildCode(st, x->left, s.append("0 "));
-		buildCode(st, x->right, s.append("1 "));
+	if (!x->isLeaf() ) {
+		buildCode(st, x->left, s + "0 ");
+		buildCode(st, x->right, s + "1 ");
 	}
 	else {
 		st[x->data] = s;
@@ -148,19 +208,20 @@ string Huffman::generateEncodedString() {
 	double count = 0;
 	output = "";
 
-	cout << "Original Count: " << (double)bytes.size() << endl;
+	cout << "Original Count: " << (double)fSize << endl;
 
-	for (int i = 0; i < bytes.size(); i++) {
-		if (bytes[i] > 0) {
-			string outCode = code[bytes[i]];
+	
+	for (int i = 0; i < NUM_CHAR; i++) {
+		if (charCount[i] > 0) {
+			string outCode = code[buffer[i]];
 			output += outCode;
 			count += outCode.length();
 		}
 	}
 
-	double savings = ( (count/8) / (double)bytes.size() * 100);
+	double savings = ( (count/8) / (double)fSize * 100);
 
-	cout << "Compressed Count: " <<  (int)count/8 << endl;
+	cout << "Compressed Count: " <<  (int)fSize/8 << endl;
 	cout << "Savings: " << savings << " %" << endl;
 
 	return output;
@@ -180,26 +241,26 @@ string Huffman::generateHeader() {
 	string out = "";
 	Node* tmp = root;
 
-	preOrder(tmp, treeHeader);
+	preOrder(tmp);
 
 	cout << "\n\n\nPoreorder ree size?" << treeHeader.size() << endl;
 
 	return out;
 }
 
-void Huffman::preOrder(Node* r, vector<int> &v) {
+void Huffman::preOrder(Node* r) {
 	
-	if (r == NULL) {
-		v.push_back(0);
-		cout << "-0-" << " \n";
-	}
+	if (r == NULL)
+		return;
 
-	else {
-		v.push_back(1);
-		cout << "-1:" << r->data << "-" << endl;
-		preOrder(r->left, v);
-		preOrder(r->right, v);
+	if (r->data != '\0') {
+		cout << r->data << " ";
 	}
+	
+
+	preOrder(r->left);
+	preOrder(r->right);
+	
 }
 
 void Huffman::writeToFile(string f, obstream &o, string h) {
@@ -258,6 +319,8 @@ vector<int> Huffman::readFile(char* f) {
 	ifstream iFile(fName, ios::binary);
 	ibstream i(iFile);
 	vector<int> ints;
+	vector<int> byts;
+	string bints = "";
 	while (iFile)
 	{
 		ints.push_back(i.readBit());
@@ -267,7 +330,11 @@ vector<int> Huffman::readFile(char* f) {
 
 	for (int i = 0; i < ints.size(); i++)
 	{
-		cout << ints[i] << " ";
+
+		if (i % 8 == 0)
+		{
+			cout << endl;
+		}
 	}
 
 	iFile.close();
