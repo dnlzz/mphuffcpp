@@ -28,7 +28,8 @@ public:
 	void buildCode(string[], Node*, string);
 	string generateEncodedString();
 	vector<int> strToVec(string);
-	string generateHeader();
+	string generateHeader(obstream&);
+	void writeHeader(Node*, obstream&);
 	void writeToFile(string, obstream&, string);
 	void preOrder(Node*);
 

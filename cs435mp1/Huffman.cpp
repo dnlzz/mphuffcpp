@@ -30,15 +30,15 @@ void Huffman::encode(char* f) {
 	string outStr = generateEncodedString();
 	cout << "outStr: " << outStr << endl;
 	codes = strToVec(outStr);
-	string headerStr = generateHeader();
-
+	
 	string fName(f);
 	fName += ".huf";
-	
-	cout << "Writingn to: " << fName << endl;
 
+	cout << "Writingn to: " << fName << endl;
 	ofstream oFile(fName, ios::binary);
 	obstream o(oFile);
+
+	string headerStr = generateHeader(o);
 
 	o.writeBits(codes);
 	oFile.close();
@@ -223,15 +223,32 @@ vector<int> Huffman::strToVec(string s)
 	return inputs;
 }
 
-string Huffman::generateHeader() {
+string Huffman::generateHeader(obstream& o) {
 	string out = "";
 	Node* tmp = root;
 
 	//preOrder(tmp);
 
-	cout << "\n\n\nPoreorder ree size?" << treeHeader.size() << endl;
+	writeHeader(tmp, o);
+
+	cout << "\n\n\nPoreorder ree size? " << treeHeader.size() << endl;
 
 	return out;
+}
+
+void Huffman::writeHeader(Node* r, obstream& out) {
+	if (!r) {
+		treeHeader.push_back(-1); // "# "
+	}
+	else {
+		treeHeader.push_back(r->data); // << r->data << " ";
+		writeHeader(r->left, out);
+		writeHeader(r->right, out);
+	}
+
+	treeHeader.push_back(-2);
+	out.writeBits(treeHeader);
+
 }
 
 void Huffman::preOrder(Node* r) {
