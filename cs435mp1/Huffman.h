@@ -19,9 +19,9 @@ class Huffman
 public:
 	Huffman();
 	void encode(char*);
-	void readAllBytes(char const*);
+	vector<char> readAllBytes(char const*);
 	void printVector();
-	void getFreq();
+	void getFreq(char const*);
 	Node* buildMinHeap();
 	string convert(string);
 	void writeTree(Node*);

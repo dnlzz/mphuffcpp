@@ -12,11 +12,6 @@ void heapPQueue::add(Node* value) {
 	arr.push_back(value);
 	numEls++;
 
-	for (int i = 0; i < arr.size(); i++)
-	{
-		cout << arr[i]->data << " : " << arr[i]->freq << " \n";
-	}
-
 	bubbleUp();
 
 	cout << endl;
