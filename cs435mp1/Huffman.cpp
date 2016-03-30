@@ -36,7 +36,7 @@ void Huffman::encode(char* f) {
 	fName += ".huf";
 
 	cout << "Writingn to: " << fName << endl;
-	ofstream oFile(fName, ios::binary);
+	ofstream oFile(fName);
 	obstream o(oFile);
 
 	string headerStr = generateHeader(o);
@@ -51,7 +51,10 @@ void Huffman::encode(char* f) {
 
 	cout << "\nWrite size " << treeHeader.size() << endl;
 
-	o.writeBits(treeHeader);
+	oFile << header << endl;
+	oFile << outStr;
+
+	//o.writeBits(treeHeader);
 	
 	oFile.close();
 
@@ -188,8 +191,8 @@ void Huffman::writeTree(Node* x) {
 
 void Huffman::buildCode(string st[], Node* x, string s) {
 	if (!x->isLeaf() ) {
-		buildCode(st, x->left, s + "0 ");
-		buildCode(st, x->right, s + "1 ");
+		buildCode(st, x->left, s + "0"); //add space after 0 for bit reading/writing
+		buildCode(st, x->right, s + "1"); //add space after 1 for bit reading/writing
 	}
 	else {
 		st[x->data] = s;
@@ -249,12 +252,12 @@ string Huffman::generateHeader(obstream& o) {
 
 void Huffman::writeHeader(obstream& out, Node* r, string s) {
 	if (!r->isLeaf()) {
-		writeHeader(out, r->left, s + "0 ");
-		writeHeader(out, r->right, s + "1 ");
+		writeHeader(out, r->left, s + "0"); //add space after 0 for bit reading/writing
+		writeHeader(out, r->right, s + "1"); //add space after 1 for bit reading/writing
 	}
 	else {
 		s += r->data;
-		s = s + " ";
+//		s = s + " ";  //for bit read/write
 		header += s;
 	}
 
@@ -286,16 +289,11 @@ vector<int> Huffman::readFile(char* f) {
 
 	return result;
 	*/
-	vector<int> bits;
-	ifstream ifs(f, ios::binary);
-	ibstream ib(ifs);
-	int counter = 0;
-	while (ib.readBit() != EOF)
-	{
-		bits.push_back(ib.readBit());
-	}
+	vector<int> treeStruct;
+	ifstream ifs(f);
 
-	return bits;
+
+	return treeHeader;
 
 }
 
