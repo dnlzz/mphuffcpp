@@ -14,8 +14,6 @@ void heapPQueue::add(Node* value) {
 
 	bubbleUp();
 
-	cout << endl;
-
 }
 
 
@@ -76,15 +74,6 @@ void heapPQueue::bubbleDown() {
 
 void heapPQueue::bubbleUp() {
 	int idx = numEls-1;
-
-	/*cout << endl;
-	cout << "idx: " << idx << endl;
-	cout << "hasparent: " << hasParent(idx) << endl;
-	cout << "parent: " << parent(idx)->data << ", " << parent(idx)->freq << endl;
-	cout << "vec[idx]: " << arr[idx]->freq << endl;
-	cout << "compareto: " << parent(idx)->compareTo(arr[idx]) << endl;
-	cout << "T/F" << hasParent(idx) && (parent(idx)->compareTo(arr[idx]) > 0);
-	cout << endl;*/
 
 	while ( hasParent(idx) && ( parent(idx)->compareTo(arr[idx]) > 0) ) {
 		swap(idx, parentIndex(idx));

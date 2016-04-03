@@ -28,21 +28,17 @@ public:
 	void buildCode(string[], Node*, string);
 	string generateEncodedString();
 	vector<int> strToVec(string);
-	string generateHeader(obstream&);
+	void generateHeader();
+
 	void writeHeader(obstream&, Node*, string);
 	void preOrder(Node*);
 
 	void decode(char*);
-	vector<int> readFile(char*);
+	string readHeader(char*);
+	void readContents(char*);
+	void traverse();
 	vector<char> bytes;
 	string output;
-	
-//private:
-	//String encodeFile();
-	//byte[] convertToBytes()
-	//Node* buildMinHeap();
-	//void buildCode(String[] st, Node x, String s);
-	//void writeTree(Node* x);
 
 };
 

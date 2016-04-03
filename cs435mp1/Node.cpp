@@ -4,7 +4,7 @@
 using namespace std;
 
 Node::Node() {
-	cout << "Created:" << endl;
+	
 }
 
 Node::Node(int newData, int newFreq, Node* newLeft, Node* newRight) {

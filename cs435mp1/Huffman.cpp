@@ -1,20 +1,14 @@
 #include "Huffman.h"
 
-
-
 const int NUM_CHAR = 256;
 int charCount[NUM_CHAR];
 string code[NUM_CHAR];
 vector<int> codes;
 vector<int> treeHeader;
-string header;
+string header, contents, decodedStr, strToDecode;
 Node *root;
-int fSize;
+int headerCount;
 char * buffer;
-
-//int[] freq;
-//int[] charLocs;
-
 
 Huffman::Huffman()
 {
@@ -24,50 +18,28 @@ Huffman::Huffman()
 void Huffman::encode(char* f) {
 	bytes = readAllBytes(f);
 	getFreq(f);
-	//printVector();
 	root = buildMinHeap();
 	buildCode(code, root, "");
 	writeTree(root);
+
 	string outStr = generateEncodedString();
-	cout << "outStr: " << outStr << endl;
 	codes = strToVec(outStr);
 	
+	generateHeader();
+	treeHeader = strToVec(header);
+
 	string fName(f);
 	fName += ".huf";
 
-	cout << "Writingn to: " << fName << endl;
-	ofstream oFile(fName);
-	obstream o(oFile);
-
-	string headerStr = generateHeader(o);
-	treeHeader = strToVec(header);
-
-	treeHeader.insert(treeHeader.end(), codes.begin(), codes.end());
-
-	for (int j = 0; j < treeHeader.size(); j++)
-	{
-		cout << treeHeader[j];
-	}
-
-	cout << "\nWrite size " << treeHeader.size() << endl;
-
-	oFile << header << endl;
-	oFile << outStr;
-
-	//o.writeBits(treeHeader);
+	ofstream outfile;
+	outfile.open(fName, ios::out | ios::binary | ios::app);
+	obstream o(outfile);
 	
-	oFile.close();
+	outfile << headerCount << " ";
+	outfile << header;
+	outfile << outStr;
 
-	int numOut = 0;
-	for (int i = 0; i < NUM_CHAR; i++)
-	{
-		if (charCount[i] > 0) {
-			numOut += (code[i].size() / 2) * charCount[i];
-			cout << code[i] << " : " << i << " : " << code[i].size()/2 << endl;
-		}
-	}
-
-	cout << "total decompress size: " << numOut << endl;
+	outfile.close();
 
 }
 
@@ -104,18 +76,6 @@ void Huffman::printVector() {
 }
 
 void Huffman::getFreq(char const* fn) {
-	/*for (int i = 0; i < NUM_CHAR; ++i) {
-		charCount[i] = 0;
-	}
-
-	int k = 0;
-	for (int j = 0; j < bytes.size(); j++) {
-		if (bytes[k] >= 0 && bytes[k] < NUM_CHAR)
-		{
-			charCount[bytes[j]]++;
-			k++;
-		}
-	}*/
 
 	FILE * pFile;
 	long lSize;
@@ -145,7 +105,6 @@ void Huffman::getFreq(char const* fn) {
 	int ch;
 	while ((ch = fgetc(pFile)) != EOF) {
 		++charCount[ch];
-		fSize++;
 	}
 
 	// terminate
@@ -155,8 +114,6 @@ void Huffman::getFreq(char const* fn) {
 	{
 	cout << charCount[i] << "  ";
 	}*/
-
-	cout << "\nFsize" << fSize << endl;
 
 }
 
@@ -182,7 +139,6 @@ Node* Huffman::buildMinHeap() {
 
 void Huffman::writeTree(Node* x) {
 	if (x->isLeaf()) {
-		//cout << "Data: " << x->data << endl;
 		return;
 	}
 	writeTree(x->left);
@@ -205,9 +161,6 @@ string Huffman::generateEncodedString() {
 	double count = 0;
 	output = "";
 
-	cout << "Original Count: " << (double)fSize << endl;
-
-	
 	for (int i = 0; i < bytes.size(); i++) {
 		if (bytes[i] > 0) {
 			string outCode = code[bytes[i]];
@@ -215,11 +168,6 @@ string Huffman::generateEncodedString() {
 			count += outCode.length();
 		}
 	}
-
-	double savings = ( (count/8) / (double)fSize * 100);
-
-	cout << "Compressed Count: " <<  (int)fSize/8 << endl;
-	cout << "Savings: " << savings << " %" << endl;
 
 	return output;
 
@@ -234,66 +182,96 @@ vector<int> Huffman::strToVec(string s)
 	return inputs;
 }
 
-string Huffman::generateHeader(obstream& o) {
+void Huffman::generateHeader() {
 	string out = "";
 	Node* tmp = root;
 
-	//preOrder(tmp);
-
 	header = "";
-	writeHeader(o, tmp, "");
-	header = header + "-1";
-	cout << "header: " << header << endl;
+	headerCount = 0;
 
-	cout << "\n\n\nPoreorder ree size? " << treeHeader.size() << endl;
-
-	return out;
-}
-
-void Huffman::writeHeader(obstream& out, Node* r, string s) {
-	if (!r->isLeaf()) {
-		writeHeader(out, r->left, s + "0"); //add space after 0 for bit reading/writing
-		writeHeader(out, r->right, s + "1"); //add space after 1 for bit reading/writing
-	}
-	else {
-		s += r->data;
-//		s = s + " ";  //for bit read/write
-		header += s;
+	for (int i = 0; i < NUM_CHAR; i++)
+	{
+		if (charCount[i] > 0)
+		{
+			header += to_string(i) + " " + to_string(charCount[i]) + " ";
+			headerCount++;
+		}
 	}
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 void Huffman::decode(char* f) {
 	cout << f << endl;
-	vector<int> ints = readFile(f);
+	strToDecode = readHeader(f);
+	root = buildMinHeap();
+	writeTree(root);
+	traverse();
 
+	string fName = f;
+	int noExt = fName.find_last_of(".");
+	fName = fName.substr(0, noExt);
 
+	ofstream fp;
+	fp.open(fName, ios::binary);
+	fp << decodedStr;
+	fp.close();
 
-	//printVector();
-	//root = buildMinHeap();
-	//buildCode(code, root, "");
-	//writeTree(root);
-
-}
-
-vector<int> Huffman::readFile(char* f) {
-	/*
-	ifstream ifs(f, ios::binary | ios::ate);
-	ifstream::pos_type pos = ifs.tellg();
-
-	vector<char>  result(pos);
-
-	ifs.seekg(0, ios::beg);
-	ifs.read(&result[0], pos);
-
-	return result;
-	*/
-	vector<int> treeStruct;
-	ifstream ifs(f);
-
-
-	return treeHeader;
+	remove(f);
 
 }
 
+string Huffman::readHeader(char* f) {
+
+	ifstream fp;
+	headerCount = 0;
+	int loc;
+	int number;
+	string s;
+
+	fp.open(f, ios::in | ios::binary);
+
+	fp >> headerCount;
+
+	for (int i = 0; i < headerCount; i++)
+	{
+		fp >> loc;
+		fp >> number;
+		charCount[loc] = number;
+	}
+
+	fp >> s;
+
+	fp.close();
+
+	return s;
+
+}
+
+
+void Huffman::traverse() {
+
+	Node *tmp = root;
+
+	for (int i = 0; i < strToDecode.length(); i++) {
+
+		if (strToDecode[i] == '0'){
+			tmp = tmp->left;
+		}
+
+		if (strToDecode[i] == '1'){
+			tmp = tmp->right;
+		}
+
+		if (tmp->isLeaf())
+		{
+			decodedStr += (char)(tmp->data);
+			tmp = root;
+		}
+
+	}
+
+}
