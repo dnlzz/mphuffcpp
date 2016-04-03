@@ -23,16 +23,16 @@ void Huffman::encode(char* f) {
 	writeTree(root);
 
 	string outStr = generateEncodedString();
-	codes = strToVec(outStr);
+	//codes = strToVec(outStr);
 	
 	generateHeader();
-	treeHeader = strToVec(header);
+	//treeHeader = strToVec(header);
 
 	string fName(f);
 	fName += ".huf";
 
 	ofstream outfile;
-	outfile.open(fName, ios::out | ios::binary | ios::app);
+	outfile.open(fName.c_str(), ios_base::out | ios_base::binary | ios_base::app);
 	obstream o(outfile);
 	
 	outfile << headerCount << " ";
@@ -47,12 +47,12 @@ void Huffman::encode(char* f) {
 vector<char> Huffman::readAllBytes(char const* fn)
 {
 
-	ifstream ifs(fn, ios::binary | ios::ate);
+	ifstream ifs(fn, ios_base::binary | ios_base::ate);
 	ifstream::pos_type pos = ifs.tellg();
 
 	vector<char>  result(pos);
 
-	ifs.seekg(0, ios::beg);
+	ifs.seekg(0, ios_base::beg);
 	ifs.read(&result[0], pos);
 
 	return result;
@@ -82,7 +82,7 @@ void Huffman::getFreq(char const* fn) {
 	size_t result;
 
 	pFile = fopen(fn, "rb");
-	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
+	if (pFile == NULL) { fputs("File error", stderr); }
 
 	// obtain file size:
 	fseek(pFile, 0, SEEK_END);
@@ -90,12 +90,12 @@ void Huffman::getFreq(char const* fn) {
 	rewind(pFile);
 
 	// allocate memory to contain the whole file:
-	buffer = (char*)malloc(sizeof(char)*lSize);
-	if (buffer == NULL) { fputs("Memory error", stderr); exit(2); }
+	buffer = (char*)(sizeof(char)*lSize);
+	if (buffer == NULL) { fputs("Memory error", stderr); }
 
 	// copy the file into the buffer:
 	result = fread(buffer, sizeof(char), lSize, pFile);
-	if (result != lSize) { fputs("Reading error", stderr); exit(3); }
+	if (result != lSize) { fputs("Reading error", stderr); }
 
 	/* the whole file is now loaded in the memory buffer. */
 
@@ -103,7 +103,7 @@ void Huffman::getFreq(char const* fn) {
 
 
 	int ch;
-	while ((ch = fgetc(pFile)) != EOF) {
+	while ((ch = fgetc(pFile)) != -1) {
 		++charCount[ch];
 	}
 
@@ -173,30 +173,33 @@ string Huffman::generateEncodedString() {
 
 }
 
-vector<int> Huffman::strToVec(string s)
+/*vector<int> Huffman::strToVec(string s)
 {
 	vector<int> inputs;
 	istringstream in(s);
-	copy(std::istream_iterator<int>(in), std::istream_iterator<int>(),
-		std::back_inserter(inputs));
+	copy(istream_iterator<int>(in), istream_iterator<int>(), back_inserter(inputs));
 	return inputs;
-}
+}*/
 
 void Huffman::generateHeader() {
 	string out = "";
 	Node* tmp = root;
 
 	header = "";
+	stringstream ssheader;
 	headerCount = 0;
 
 	for (int i = 0; i < NUM_CHAR; i++)
 	{
 		if (charCount[i] > 0)
 		{
-			header += to_string(i) + " " + to_string(charCount[i]) + " ";
+			//header += to_string(i) + " " + to_string(charCount[i]) + " ";
+			ssheader << i << " " << charCount[i] << " ";
 			headerCount++;
 		}
 	}
+
+	header = ssheader.str();
 
 }
 
@@ -216,7 +219,7 @@ void Huffman::decode(char* f) {
 	fName = fName.substr(0, noExt);
 
 	ofstream fp;
-	fp.open(fName, ios::binary);
+	fp.open(fName.c_str(), ios_base::binary);
 	fp << decodedStr;
 	fp.close();
 
@@ -232,7 +235,7 @@ string Huffman::readHeader(char* f) {
 	int number;
 	string s;
 
-	fp.open(f, ios::in | ios::binary);
+	fp.open(f, ios_base::in | ios_base::binary);
 
 	fp >> headerCount;
 

@@ -11,6 +11,8 @@
 #include <vector>
 #include <istream>
 #include "bitIO.h"
+#include <cstring>
+#include <sstream>
 
 using namespace std;
 
